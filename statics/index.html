@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenShift DevOps Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f7;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #1b1b1d;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 22px;
+            color: #e53935;
+        }
+
+        .nav-button {
+            width: 100%;
+            padding: 15px 20px;
+            text-align: left;
+            border: none;
+            background: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+        }
+
+        .nav-button:hover {
+            background: #e53935;
+        }
+
+        .main {
+            margin-left: 260px;
+            padding: 30px;
+            width: calc(100% - 260px);
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            background: #e53935;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+
+        .action-btn:hover {
+            background: #b71c1c;
+        }
+
+        #output {
+            white-space: pre-wrap;
+            background: #111;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            height: 200px;
+            overflow-y: auto;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>DevOps Dashboard</h2>
+
+        <button class="nav-button" onclick="showSection('actions')">Actions</button>
+        <button class="nav-button" onclick="showSection('configmap')">Create ConfigMap</button>
+        <button class="nav-button" onclick="showSection('secret')">Create Secret</button>
+        <button class="nav-button" onclick="showSection('scaling')">Scaling</button>
+        <button class="nav-button" onclick="showSection('logs')">Logs</button>
+        <button class="nav-button" onclick="showSection('deployImageConfig')">Deploy Image + Config/Secret</button>
+    </div>
+
+    <div class="main">
+
+        <div id="actions" class="card">
+            <h3>OpenShift & GitHub Actions</h3>
+
+            <button class="action-btn" onclick="trigger('/start-github-actions')">Trigger GitHub Actions</button>
+            <button class="action-btn" onclick="trigger('/deploy-yaml')">Deploy YAML</button>
+            <button class="action-btn" onclick="trigger('/start-build')">Start Build</button>
+            <button class="action-btn" onclick="trigger('/expose-route')">Expose Route</button>
+            <button class="action-btn" onclick="trigger('/get-route')">Get Route</button>
+        </div>
+
+        <div id="configmap" class="card" style="display:none;">
+            <h3>Create ConfigMap</h3>
+            <input id="cm-name" placeholder="ConfigMap Name">
+            <textarea id="cm-data" placeholder="key=value"></textarea>
+            <button class="action-btn">Create ConfigMap</button>
+        </div>
+
+        <div id="secret" class="card" style="display:none;">
+            <h3>Create Secret</h3>
+            <input id="secret-name" placeholder="Secret Name">
+            <textarea id="secret-data" placeholder="key=value"></textarea>
+            <button class="action-btn">Create Secret</button>
+        </div>
+
+        <div id="scaling" class="card" style="display:none;">
+            <h3>Scale Deployment</h3>
+            <button class="action-btn" onclick="trigger('/scale-up')">Scale Up</button>
+            <button class="action-btn" onclick="trigger('/scale-down')">Scale Down</button>
+        </div>
+
+        <div id="logs" class="card" style="display:none;">
+            <h3>View Logs</h3>
+            <button class="action-btn" onclick="trigger('/view-logs')">Fetch Logs</button>
+        </div>
+        <div id="deployImageConfig" class="card" style="display:none;">
+            <h3>Deploy Docker Image with ConfigMap + Secret</h3>
+
+            <h4>Deployment</h4>
+            <input id="d-name" placeholder="App Name">
+            <input id="d-image" placeholder="Docker Image (e.g. quay.io/user/app:latest)">
+            <input id="d-port" placeholder="Port" value="8080">
+            <input id="d-replicas" placeholder="Replicas" value="1">
+
+            <h4>ConfigMap</h4>
+            <input id="d-cm-name" placeholder="ConfigMap Name">
+            <input id="d-cm-key" placeholder="Key">
+            <input id="d-cm-value" placeholder="Value">
+            <input id="d-cm-path" placeholder="Mount Path (e.g. /etc/config)">
+
+            <h4>Secret</h4>
+            <input id="d-secret-name" placeholder="Secret Name">
+            <input id="d-secret-key" placeholder="Key">
+            <input id="d-secret-value" placeholder="Value">
+            <input id="d-secret-path" placeholder="Mount Path (e.g. /etc/secret)">
+
+            <button class="action-btn" onclick="deployImageWithConfig()">Deploy</button>
+        </div>
+
+        <div id="output"></div>
+
+    </div>
+
+<script>
+function showSection(id) {
+    document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
+}
+
+function trigger(endpoint) {
+    fetch(endpoint, { method: "POST" })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+        });
+}
+
+function deployImageWithConfig() {
+    const body = {
+        name: document.getElementById("d-name").value,
+        image: document.getElementById("d-image").value,
+
+        configmap_name: document.getElementById("d-cm-name").value,
+        config_key: document.getElementById("d-cm-key").value,
+        config_value: document.getElementById("d-cm-value").value,
+        config_mount_path: document.getElementById("d-cm-path").value,
+
+        secret_name: document.getElementById("d-secret-name").value,
+        secret_key: document.getElementById("d-secret-key").value,
+        secret_value: document.getElementById("d-secret-value").value,
+        secret_mount_path: document.getElementById("d-secret-path").value,
+
+        port: parseInt(document.getElementById("d-port").value),
+        replicas: parseInt(document.getElementById("d-replicas").value)
+    };
+
+    fetch("/deploy-image-with-config", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById("output").textContent =
+            JSON.stringify(data, null, 2);
+    });
+}
+</script>
+
+</body>
+</html>

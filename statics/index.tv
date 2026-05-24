@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DevOps Dashboard – ubiowororuki-dev</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .spinner {
+      border-top-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <!-- Toast -->
+  <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+    <div id="toast-inner" class="px-4 py-3 rounded shadow text-sm"></div>
+  </div>
+
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-gray-100 flex flex-col">
+      <div class="px-6 py-4 border-b border-gray-800">
+        <h1 class="text-xl font-semibold flex items-center gap-2">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded bg-indigo-500 text-white 
+font-bold">D</span>
+          <span>DevOps Dashboard</span>
+        </h1>
+        <p class="text-xs text-gray-400 mt-1">Cluster: <span class="font-mono">ubiowororuki-dev</span></p>
+      </div>
+      <nav class="flex-1 overflow-y-auto mt-2">
+        <ul class="space-y-1 px-2">
+          <li><button data-view="deploy" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>🚀</span><span>Deploy Application</span></button></li>
+          <li><button data-view="scale" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded text-sm 
+hover:bg-gray-800"><span>📈</span><span>Scale Deployment</span></button></li>
+          <li><button data-view="delete" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>🗑️</span><span>Delete Deployment</span></button></li>
+          <li><button data-view="pods" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded text-sm 
+hover:bg-gray-800"><span>📦</span><span>View Pods</span></button></li>
+          <li><button data-view="logs" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded text-sm 
+hover:bg-gray-800"><span>📜</span><span>View Logs</span></button></li>
+          <li><button data-view="configmap" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>🧩</span><span>Create ConfigMap</span></button></li>
+          <li><button data-view="secret" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>🔐</span><span>Create Secret</span></button></li>
+          <li><button data-view="service" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>🌐</span><span>Create Service</span></button></li>
+          <li><button data-view="route" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded text-sm 
+hover:bg-gray-800"><span>🔗</span><span>Create HTTPS Route</span></button></li>
+          <li><button data-view="buildconfig" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>🏗️</span><span>Trigger BuildConfig</span></button></li>
+          <li><button data-view="tekton" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>🧪</span><span>Trigger Tekton Pipeline</span></button></li>
+          <li><button data-view="argocd" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>🧭</span><span>Install ArgoCD</span></button></li>
+          <li><button data-view="namespace" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>📂</span><span>Namespace Management</span></button></li>
+          <li><button data-view="database" class="nav-btn w-full flex items-center gap-2 px-3 py-2 rounded 
+text-sm hover:bg-gray-800"><span>🗄️</span><span>Database Deployment</span></button></li>
+        </ul>
+      </nav>
+      <div class="px-4 py-3 border-t border-gray-800 text-xs text-gray-500">
+        Built for FastAPI + OpenShift
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 flex flex-col">
+      <!-- Header -->
+      <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+        <div>
+          <h2 id="view-title" class="text-lg font-semibold">Deploy Application</h2>
+          <p class="text-xs text-gray-500">Cluster: <span class="font-mono">ubiowororuki-dev</span></p>
+        </div>
+        <div class="flex items-center gap-3 text-sm text-gray-500">
+          <span class="inline-flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            Connected
+          </span>
+        </div>
+      </header>
+
+      <!-- Content area -->
+      <section class="flex-1 overflow-y-auto p-6 bg-gray-100">
+        <!-- Deploy Application -->
+        <div id="view-deploy" class="view">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Deploy Nginx Application</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              This will call <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST 
+/deploy-nginx-cli</code> and deploy <span class="font-mono">dev-bitnami-nginx</span> into <span 
+class="font-mono">ubiowororuki-dev</span>.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Replicas</label>
+                <input id="deploy-replicas" type="number" value="1" min="1" class="w-32 border rounded px-2 
+py-1 text-sm" />
+              </div>
+              <button id="btn-deploy" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white 
+text-sm rounded hover:bg-indigo-700">
+                <span>🚀 Deploy</span>
+                <span class="hidden" id="deploy-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="deploy-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Scale Deployment -->
+        <div id="view-scale" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Scale Deployment</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /scale</code> to change 
+replicas.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Deployment Name</label>
+                <input id="scale-name" type="text" value="dev-bitnami-nginx" class="w-full border rounded px-2 
+py-1 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Replicas</label>
+                <input id="scale-replicas" type="number" value="2" min="1" class="w-32 border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <button id="btn-scale" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white 
+text-sm rounded hover:bg-indigo-700">
+                <span>📈 Scale</span>
+                <span class="hidden" id="scale-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="scale-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Delete Deployment -->
+        <div id="view-delete" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Delete Deployment</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">DELETE /delete</code> to remove a 
+deployment and related resources.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Deployment Name</label>
+                <input id="delete-name" type="text" value="dev-bitnami-nginx" class="w-full border rounded px-2 
+py-1 text-sm" />
+              </div>
+              <button id="btn-delete" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white 
+text-sm rounded hover:bg-red-700">
+                <span>🗑️ Delete</span>
+                <span class="hidden" id="delete-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="delete-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- View Pods -->
+        <div id="view-pods" class="view hidden">
+          <div class="max-w-3xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">View Pods</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">GET /pods</code> to list pods in the 
+namespace.
+            </p>
+            <button id="btn-pods" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white 
+text-sm rounded hover:bg-indigo-700">
+              <span>📦 Refresh Pods</span>
+              <span class="hidden" id="pods-spinner">
+                <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+              </span>
+            </button>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Pods</h4>
+            <pre id="pods-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- View Logs -->
+        <div id="view-logs" class="view hidden">
+          <div class="max-w-3xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">View Logs</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">GET /logs?pod=&lt;name&gt;</code>.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Pod Name</label>
+                <input id="logs-pod" type="text" placeholder="dev-bitnami-nginx-xxxxx" class="w-full border 
+rounded px-2 py-1 text-sm" />
+              </div>
+              <button id="btn-logs" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white 
+text-sm rounded hover:bg-indigo-700">
+                <span>📜 Get Logs</span>
+                <span class="hidden" id="logs-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Logs</h4>
+            <pre id="logs-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-96"></pre>
+          </div>
+        </div>
+
+        <!-- Create ConfigMap -->
+        <div id="view-configmap" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Create ConfigMap</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /create-configmap</code>.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Name</label>
+                <input id="cm-name" type="text" value="nginx-config" class="w-full border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Key</label>
+                <input id="cm-key" type="text" value="index.html" class="w-full border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Value</label>
+                <textarea id="cm-value" rows="4" class="w-full border rounded px-2 py-1 text-sm" 
+placeholder="ConfigMap value..."></textarea>
+              </div>
+              <button id="btn-configmap" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 
+text-white text-sm rounded hover:bg-indigo-700">
+                <span>🧩 Create ConfigMap</span>
+                <span class="hidden" id="cm-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="cm-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Create Secret -->
+        <div id="view-secret" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Create Secret</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /create-secret</code>.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Name</label>
+                <input id="secret-name" type="text" value="nginx-secret" class="w-full border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Key</label>
+                <input id="secret-key" type="text" value="APP_SECRET" class="w-full border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Value</label>
+                <input id="secret-value" type="text" value="super-secret-value" class="w-full border rounded 
+px-2 py-1 text-sm" />
+              </div>
+              <button id="btn-secret" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white 
+text-sm rounded hover:bg-indigo-700">
+                <span>🔐 Create Secret</span>
+                <span class="hidden" id="secret-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="secret-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Create Service -->
+        <div id="view-service" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Create Service</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /create-service</code>.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Service Name</label>
+                <input id="svc-name" type="text" value="dev-bitnami-nginx" class="w-full border rounded px-2 
+py-1 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Port</label>
+                <input id="svc-port" type="number" value="8080" class="w-32 border rounded px-2 py-1 text-sm" 
+/>
+              </div>
+              <button id="btn-service" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white 
+text-sm rounded hover:bg-indigo-700">
+                <span>🌐 Create Service</span>
+                <span class="hidden" id="svc-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="svc-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Create HTTPS Route -->
+        <div id="view-route" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Create HTTPS Edge Route</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /create-route</code>.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Route Name</label>
+                <input id="route-name" type="text" value="dev-bitnami-nginx" class="w-full border rounded px-2 
+py-1 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Service Name</label>
+                <input id="route-service" type="text" value="dev-bitnami-nginx" class="w-full border rounded 
+px-2 py-1 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Port</label>
+                <input id="route-port" type="number" value="8080" class="w-32 border rounded px-2 py-1 text-sm" 
+/>
+              </div>
+              <button id="btn-route" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white 
+text-sm rounded hover:bg-indigo-700">
+                <span>🔗 Create Route</span>
+                <span class="hidden" id="route-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="route-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Trigger BuildConfig -->
+        <div id="view-buildconfig" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Trigger BuildConfig</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /start-build</code>.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">BuildConfig Name</label>
+                <input id="bc-name" type="text" value="my-buildconfig" class="w-full border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <button id="btn-buildconfig" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 
+text-white text-sm rounded hover:bg-indigo-700">
+                <span>🏗️ Start Build</span>
+                <span class="hidden" id="bc-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="bc-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Trigger Tekton Pipeline -->
+        <div id="view-tekton" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Trigger Tekton Pipeline</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /run-pipeline</code>.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Pipeline Name</label>
+                <input id="tekton-name" type="text" value="my-pipeline" class="w-full border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <button id="btn-tekton" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white 
+text-sm rounded hover:bg-indigo-700">
+                <span>🧪 Run Pipeline</span>
+                <span class="hidden" id="tekton-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="tekton-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Install ArgoCD -->
+        <div id="view-argocd" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Install ArgoCD</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /install-argocd</code>.
+            </p>
+            <button id="btn-argocd" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white 
+text-sm rounded hover:bg-indigo-700">
+              <span>🧭 Install ArgoCD</span>
+              <span class="hidden" id="argocd-spinner">
+                <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+              </span>
+            </button>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="argocd-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Namespace Management -->
+        <div id="view-namespace" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Namespace Management</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /create-namespace</code>.
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Namespace Name</label>
+                <input id="ns-name" type="text" value="ubiowororuki-dev" class="w-full border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <button id="btn-namespace" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 
+text-white text-sm rounded hover:bg-indigo-700">
+                <span>📂 Create Namespace</span>
+                <span class="hidden" id="ns-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="ns-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+
+        <!-- Database Deployment -->
+        <div id="view-database" class="view hidden">
+          <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
+            <h3 class="text-base font-semibold mb-4">Database Deployment (PostgreSQL/MySQL)</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Calls <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">POST /deploy-postgres</code> (you can 
+extend for MySQL).
+            </p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Database Name</label>
+                <input id="db-name" type="text" value="orders-db" class="w-full border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Storage</label>
+                <input id="db-storage" type="text" value="10Gi" class="w-full border rounded px-2 py-1 text-sm" 
+/>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Password</label>
+                <input id="db-password" type="password" value="S3cret!" class="w-full border rounded px-2 py-1 
+text-sm" />
+              </div>
+              <button id="btn-database" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 
+text-white text-sm rounded hover:bg-indigo-700">
+                <span>🗄️ Deploy Database</span>
+                <span class="hidden" id="db-spinner">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin 
+spinner"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="max-w-3xl mx-auto mt-6">
+            <h4 class="text-sm font-semibold mb-2">Response</h4>
+            <pre id="db-output" class="bg-black text-green-400 text-xs p-4 rounded-lg overflow-auto 
+h-64"></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Simple toast
+    function showToast(message, type = "success") {
+      const toast = document.getElementById("toast");
+      const inner = document.getElementById("toast-inner");
+      inner.textContent = message;
+      inner.className =
+        "px-4 py-3 rounded shadow text-sm " +
+        (type === "success"
+          ? "bg-emerald-600 text-white"
+          : "bg-red-600 text-white");
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 3000);
+    }
+
+    // Switch views
+    const views = document.querySelectorAll(".view");
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const viewTitle = document.getElementById("view-title");
+
+    const viewTitles = {
+      deploy: "Deploy Application",
+      scale: "Scale Deployment",
+      delete: "Delete Deployment",
+      pods: "View Pods",
+      logs: "View Logs",
+      configmap: "Create ConfigMap",
+      secret: "Create Secret",
+      service: "Create Service",
+      route: "Create HTTPS Route",
+      buildconfig: "Trigger BuildConfig",
+      tekton: "Trigger Tekton Pipeline",
+      argocd: "Install ArgoCD",
+      namespace: "Namespace Management",
+      database: "Database Deployment (PostgreSQL/MySQL)",
+    };
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const view = btn.getAttribute("data-view");
+        views.forEach((v) => v.classList.add("hidden"));
+        document.getElementById("view-" + view).classList.remove("hidden");
+        viewTitle.textContent = viewTitles[view] || "DevOps Dashboard";
+        navButtons.forEach((b) =>
+          b.classList.remove("bg-gray-800", "text-white")
+        );
+        btn.classList.add("bg-gray-800", "text-white");
+      });
+    });
+
+    // Helper for fetch calls
+    async function callApi({ url, method = "GET", body = null, outputId, spinnerId }) {
+      const output = document.getElementById(outputId);
+      const spinner = document.getElementById(spinnerId);
+      if (spinner) spinner.classList.remove("hidden");
+      output.textContent = "";
+      try {
+        const options = { method, headers: {} };
+        if (body) {
+          options.headers["Content-Type"] = "application/json";
+          options.body = JSON.stringify(body);
+        }
+        const res = await fetch(url, options);
+        const text = await res.text();
+        output.textContent = text;
+        if (res.ok) {
+          showToast("Success: " + url);
+        } else {
+          showToast("Error: " + res.status, "error");
+        }
+      } catch (err) {
+        output.textContent = String(err);
+        showToast("Request failed", "error");
+      } finally {
+        if (spinner) spinner.classList.add("hidden");
+      }
+    }
+
+    // Deploy
+    document.getElementById("btn-deploy").addEventListener("click", () => {
+      const replicas = parseInt(document.getElementById("deploy-replicas").value || "1", 10);
+      callApi({
+        url: "/deploy-nginx-cli",
+        method: "POST",
+        body: { replicas },
+        outputId: "deploy-output",
+        spinnerId: "deploy-spinner",
+      });
+    });
+
+    // Scale
+    document.getElementById("btn-scale").addEventListener("click", () => {
+      const name = document.getElementById("scale-name").value.trim();
+      const replicas = parseInt(document.getElementById("scale-replicas").value || "1", 10);
+      callApi({
+        url: "/scale",
+        method: "POST",
+        body: { name, replicas },
+        outputId: "scale-output",
+        spinnerId: "scale-spinner",
+      });
+    });
+
+    // Delete
+    document.getElementById("btn-delete").addEventListener("click", () => {
+      const name = document.getElementById("delete-name").value.trim();
+      callApi({
+        url: `/delete?name=${encodeURIComponent(name)}`,
+        method: "DELETE",
+        outputId: "delete-output",
+        spinnerId: "delete-spinner",
+      });
+    });
+
+    // Pods
+    document.getElementById("btn-pods").addEventListener("click", () => {
+      callApi({
+        url: "/pods",
+        method: "GET",
+        outputId: "pods-output",
+        spinnerId: "pods-spinner",
+      });
+    });
+
+    // Logs
+    document.getElementById("btn-logs").addEventListener("click", () => {
+      const pod = document.getElementById("logs-pod").value.trim();
+      callApi({
+        url: `/logs?pod=${encodeURIComponent(pod)}`,
+        method: "GET",
+        outputId: "logs-output",
+        spinnerId: "logs-spinner",
+      });
+    });
+
+    // ConfigMap
+    document.getElementById("btn-configmap").addEventListener("click", () => {
+      const name = document.getElementById("cm-name").value.trim();
+      const key = document.getElementById("cm-key").value.trim();
+      const value = document.getElementById("cm-value").value;
+      callApi({
+        url: "/create-configmap",
+        method: "POST",
+        body: { name, key, value },
+        outputId: "cm-output",
+        spinnerId: "cm-spinner",
+      });
+    });
+
+    // Secret
+    document.getElementById("btn-secret").addEventListener("click", () => {
+      const name = document.getElementById("secret-name").value.trim();
+      const key = document.getElementById("secret-key").value.trim();
+      const value = document.getElementById("secret-value").value;
+      callApi({
+        url: "/create-secret",
+        method: "POST",
+        body: { name, key, value },
+        outputId: "secret-output",
+        spinnerId: "secret-spinner",
+      });
+    });
+
+    // Service
+    document.getElementById("btn-service").addEventListener("click", () => {
+      const name = document.getElementById("svc-name").value.trim();
+      const port = parseInt(document.getElementById("svc-port").value || "8080", 10);
+      callApi({
+        url: "/create-service",
+        method: "POST",
+        body: { name, port },
+        outputId: "svc-output",
+        spinnerId: "svc-spinner",
+      });
+    });
+
+    // Route
+    document.getElementById("btn-route").addEventListener("click", () => {
+      const name = document.getElementById("route-name").value.trim();
+      const service = document.getElementById("route-service").value.trim();
+      const port = parseInt(document.getElementById("route-port").value || "8080", 10);
+      callApi({
+        url: "/create-route",
+        method: "POST",
+        body: { name, service, port },
+        outputId: "route-output",
+        spinnerId: "route-spinner",
+      });
+    });
+
+    // BuildConfig
+    document.getElementById("btn-buildconfig").addEventListener("click", () => {
+      const name = document.getElementById("bc-name").value.trim();
+      callApi({
+        url: "/start-build",
+        method: "POST",
+        body: { name },
+        outputId: "bc-output",
+        spinnerId: "bc-spinner",
+      });
+    });
+
+    // Tekton
+    document.getElementById("btn-tekton").addEventListener("click", () => {
+      const name = document.getElementById("tekton-name").value.trim();
+      callApi({
+        url: "/run-pipeline",
+        method: "POST",
+        body: { name },
+        outputId: "tekton-output",
+        spinnerId: "tekton-spinner",
+      });
+    });
+
+    // ArgoCD
+    document.getElementById("btn-argocd").addEventListener("click", () => {
+      callApi({
+        url: "/install-argocd",
+        method: "POST",
+        outputId: "argocd-output",
+        spinnerId: "argocd-spinner",
+      });
+    });
+
+    // Namespace
+    document.getElementById("btn-namespace").addEventListener("click", () => {
+      const name = document.getElementById("ns-name").value.trim();
+      callApi({
+        url: "/create-namespace",
+        method: "POST",
+        body: { name },
+        outputId: "ns-output",
+        spinnerId: "ns-spinner",
+      });
+    });
+
+    // Database
+    document.getElementById("btn-database").addEventListener("click", () => {
+      const name = document.getElementById("db-name").value.trim();
+      const storage = document.getElementById("db-storage").value.trim();
+      const password = document.getElementById("db-password").value;
+      callApi({
+        url: "/deploy-postgres",
+        method: "POST",
+        body: { name, storage, password },
+        outputId: "db-output",
+        spinnerId: "db-spinner",
+      });
+    });
+
+    // Default active nav
+    document.querySelector('.nav-btn[data-view="deploy"]').click();
+  </script>
+</body>
+</html>
