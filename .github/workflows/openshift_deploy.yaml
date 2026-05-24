@@ -1,4 +1,4 @@
-name: CryptoVault CI/CD Pipeline
+name: BUILD  AND DEPLOY TO OPENSHIFT CLUSTER 
 
 on:
   push:
