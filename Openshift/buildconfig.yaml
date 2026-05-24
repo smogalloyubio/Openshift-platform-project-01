@@ -18,9 +18,9 @@ spec:
   triggers:
     - type: GitHub
       github:
-        secret: YOUR_WEBHOOK_SECRET
+        secret: hnARgvKX3ABx_DVCgzPY
     - type: Generic
       generic:
-        secret: YOUR_WEBHOOK_SECRET
+        secret: XdgMyASgIX4_0SKuk8JR
     - type: ConfigChange
     - type: ImageChange

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-dev
+  namespace: ubiowororuki-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp-dev
+  template:
+    metadata:
+      labels:
+        app: myapp-dev
+    spec:
+      containers:
+        - name: myapp-dev
+          image: image-registry.openshift-image-registry.svc:5000/ubiowororuki-dev/myapp-dev:latest
+          ports:
+            - containerPort: 5000

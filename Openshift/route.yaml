@@ -1,0 +1,11 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: myapp-dev
+  namespace: ubiowororuki-dev
+spec:
+  to:
+    kind: Service
+    name: myapp-dev
+  port:
+    targetPort: 5000
