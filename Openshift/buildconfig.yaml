@@ -1,0 +1,26 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: myapp-dev
+  namespace: ubiowororuki-dev
+spec:
+  source:
+    git:
+      uri: https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project
+    type: Git
+  strategy:
+    type: Docker
+    dockerStrategy: {}
+  output:
+    to:
+      kind: ImageStreamTag
+      name: myapp-dev:latest
+  triggers:
+    - type: GitHub
+      github:
+        secret: YOUR_WEBHOOK_SECRET
+    - type: Generic
+      generic:
+        secret: YOUR_WEBHOOK_SECRET
+    - type: ConfigChange
+    - type: ImageChange
