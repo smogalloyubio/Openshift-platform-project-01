@@ -1,10 +1,10 @@
 name: BUILD  AND DEPLOY TO OPENSHIFT CLUSTER 
 
 on:
+  workflow_dispatch:
   push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
+    branches:
+      - main
 
 env:
   IMAGE_NAME: fastapi-app 
