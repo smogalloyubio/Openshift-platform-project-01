@@ -59,7 +59,7 @@ This platform solves those problems by offering:
 
 ---
 
-## 🛠️ Tools Used
+## Tools Used
 
 | Tool | Purpose |
 |------|----------|
