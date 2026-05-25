@@ -26,7 +26,7 @@ This platform solves those problems by offering:
 
 ---
 
-## 🎯 Problem & Solution
+## Problem & Solution
 
 | Problem | Solution |
 |----------|-----------|
@@ -37,10 +37,7 @@ This platform solves those problems by offering:
 
 ---
 
-## 🧠 Architecture Overview
-
-
-
+## Architecture Overview
 
 ### System Components
 - **FastAPI Backend** — automation engine (`fastapi_app/main.py`)
@@ -75,7 +72,7 @@ This platform solves those problems by offering:
 
 ---
 
-## 🧰 Installation
+## Installation
 
 ```bash
 git clone https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project.git
