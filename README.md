@@ -193,6 +193,7 @@ pip install -r requirements.txt
 python3 -m venv venv
 source venv/bin/activate
 ```
+![DASHBOARD UI](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Screenshot%202026-05-25%20at%2009.18.07.png)
 
 For OpenShift deployment, configure the required secrets, then use the GitHub Actions workflow or deploy the provided manifests with `oc apply -f Openshift/ * -n ubiowororuki-dev`.
 
