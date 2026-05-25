@@ -36,7 +36,7 @@ This platform solves those problems by offering:
 | No visibility | Dashboard shows logs, routes, and replica status |
 
 ---
-![ VIDEO DEMO PROJECT LINK ](https://drive.google.com/file/d/1zCL85bGMT5S07hPlfglaOFpvnUr9YoVX/view?usp=sharing)
+https://drive.google.com/file/d/1zCL85bGMT5S07hPlfglaOFpvnUr9YoVX/view?usp=sharing
 ---
 
 ## Architecture Overview
