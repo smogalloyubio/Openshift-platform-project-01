@@ -54,7 +54,7 @@ This platform solves those problems by offering:
 ## 🧩 Architecture Diagrams
 
 ### 🖼️ High‑Level Architecture
-![High-Level Architecture](assets/high_level_architecture.png)
+![High-Level Architecture](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Copilot_20260525_095756.png)
 
 ### 🖼️ System Architecture
 ![System Architecture](assets/system_architecture.png)
