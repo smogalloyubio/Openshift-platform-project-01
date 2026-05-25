@@ -1,30 +1,97 @@
 # OpenShift Platform FastAPI Project
 
-## Project Overview
+## Overview
+The **OpenShift Platform FastAPI Project** is a **DevOps automation system** that simplifies how teams deploy, manage, and monitor applications on OpenShift.  
+It provides a **FastAPI backend**, a **web dashboard**, and a **GitHub Actions pipeline** for full CI/CD automation.
 
-This repository contains a simple Python web application with an OpenShift deployment pipeline. The app is a mock cryptocurrency dashboard built with Flask, and the project includes automation for building, scanning, pushing, and deploying the application to an OpenShift cluster.
+Instead of typing long `oc` commands, developers can click buttons and deploy instantly.
 
-The main application runs in `app.py` and exposes both HTML pages and JSON endpoints. There is also a FastAPI helper service in `fastapi_app/main.py` that can trigger OpenShift commands and GitHub Actions workflow dispatches.
+---
 
-## What is included
+##  Business Value
+Modern DevOps teams face challenges:
 
-- `app.py` - Flask web app that serves a dashboard and several JSON API endpoints.
-- `Dockerfile` - builds the application container using Python 3.12.
-- `requirements.txt` - Python dependencies.
-- `tests/test_app.py` - basic tests for the Flask application.
-- `Openshift/` - OpenShift manifests for deploying the app.
-- `.github/workflows/openshift_deploy.yaml` - GitHub Actions pipeline for test, scan, build, push, and deploy.
+- Manual OpenShift deployments slow down delivery.  
+- YAML configuration errors cause downtime.  
+- Developers depend on DevOps engineers for every change.  
+- No unified dashboard for builds, logs, and scaling.
 
-## How the app works
+This platform solves those problems by offering:
 
-The Flask app in `app.py` provides:
-- `/` - renders the UI from `templates/index.html`
-- `/api/crypto` - mock crypto asset data
-- `/api/crypto/<coin_id>/history` - generated 30-day price history
-- `/api/stats` - mock market statistics
-- `/health` - health check endpoint
+- **One‑click deployments**  
+- **Automated CI/CD pipelines**  
+- **Centralized configuration management**  
+- **Reduced DevOps workload**  
+- **Faster onboarding for new developers**
 
-The endpoints return JSON and are designed for demo or prototype usage rather than production data.
+---
+
+## 🎯 Problem & Solution
+
+| Problem | Solution |
+|----------|-----------|
+| Manual OpenShift commands | FastAPI automates all cluster operations |
+| YAML complexity | Auto‑generated manifests |
+| Slow deployments | GitHub Actions pipeline triggers builds automatically |
+| No visibility | Dashboard shows logs, routes, and replica status |
+
+---
+
+## 🧠 Architecture Overview
+
+
+
+
+### System Components
+- **FastAPI Backend** — automation engine (`fastapi_app/main.py`)
+- **Web UI** — dashboard for deployment and scaling
+- **OpenShift Cluster** — executes deployments, services, routes
+- **GitHub Actions** — CI/CD pipeline for build and deploy
+- **Quay.io Registry** — stores container images
+
+---
+
+## 🧩 Architecture Diagrams
+
+### 🖼️ High‑Level Architecture
+![High-Level Architecture](assets/high_level_architecture.png)
+
+### 🖼️ System Architecture
+![System Architecture](assets/system_architecture.png)
+
+### 🖼️ Deployment Flow
+![Deployment Flow](assets/deployment_flow.png)
+
+### 🖼️ Infrastructure Overview
+![Infrastructure Overview](assets/infrastructure_architecture.png)
+
+---
+
+## 🛠️ Tools Used
+
+| Tool | Purpose |
+|------|----------|
+| **FastAPI** | Backend automation API |
+| **OpenShift CLI (`oc`)** | Executes cluster commands |
+| **Docker / Quay.io** | Container image management |
+| **GitHub Actions** | CI/CD automation |
+| **Python 3.12** | Core language |
+| **HTML + JS** | Dashboard interface |
+
+---
+
+## 🧰 Installation
+
+```bash
+git clone https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project.git
+cd Openshift-Platform-Fastapi-Project
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+
+### High‑Level Flow
+
 
 ## Local setup and run
 
@@ -43,7 +110,10 @@ pip install -r requirements.txt
 ### Run locally
 
 ```bash
-python app.py
+install virtual env
+python3 -m venv venv
+source venv/bin/activate
+uvicorn fastapi_app.main:app --reload 
 ```
 
 Then open `http://localhost:5000` in your browser.
