@@ -142,6 +142,7 @@ The deployment is configured to use the image pushed to the OpenShift internal r
 `image-registry.openshift-image-registry.svc:5000/ubiowororuki-dev/myapp-dev:latest`
 
 ## GitHub Actions deployment pipeline
+![GITHUB ACTION PIPELINE](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Screenshot%202026-05-25%20at%2009.19.22.png)
 
 The workflow `.github/workflows/openshift_deploy.yaml` is the main CI/CD flow:
 
