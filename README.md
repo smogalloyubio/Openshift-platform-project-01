@@ -109,7 +109,7 @@ When a push is made to `main` or the workflow is manually dispatched, GitHub Act
 ## OpenShift automation helper
 
 The FastAPI app in `fastapi_app/main.py` provides optional automation endpoints for OpenShift operations, including:
-- deploy YAMLs from `Openshift/`
+- deploy YAMLs from `Openshift/*`
 - start a build
 - get or expose routes
 - scale deployment replicas
@@ -118,27 +118,17 @@ The FastAPI app in `fastapi_app/main.py` provides optional automation endpoints 
 
 This helper is useful for demonstration or custom deployment workflows, but the main app itself is `app.py`.
 
-## Notes for recruiters
-
-This project demonstrates:
-- building a Python service with Flask
-- writing test coverage with `pytest`
-- containerizing a Python application
-- defining OpenShift deployment manifests
-- setting up a GitHub Actions CI/CD pipeline for OpenShift
-- using OpenShift CLI automation through a FastAPI helper service
 
 ## Quick start summary
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project.git
 cd Openshift-Platform-Fastapi-Project
 pip install -r requirements.txt
-python app.py
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-For OpenShift deployment, configure the required secrets, then use the GitHub Actions workflow or deploy the provided manifests with `oc apply -f Openshift/ -n ubiowororuki-dev`.
+For OpenShift deployment, configure the required secrets, then use the GitHub Actions workflow or deploy the provided manifests with `oc apply -f Openshift/ * -n ubiowororuki-dev`.
 
 ---
-
-If you want, I can also add a short `Openshift/README.md` with a step-by-step deployment example for OpenShift users.
