@@ -169,6 +169,8 @@ When a push is made to `main` or the workflow is manually dispatched, GitHub Act
 - authenticate with OpenShift
 - hit the OpenShift build webhook for `myapp-dev`
 
+![OPENSHIFT DEPLOYMENT](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Screenshot%202026-05-25%20at%2009.18.51.png)
+
 ## OpenShift automation helper
 
 The FastAPI app in `fastapi_app/main.py` provides optional automation endpoints for OpenShift operations, including:
