@@ -123,7 +123,7 @@ The web dashboard provides an easy-to-use interface for:
 ---
 
 # 🏗️ High-Level Architecture
-![Architectural Diagram](https://github.com/smogalloyubio/Openshift-platform-project-01/blob/main/ArchitectureDiagram/openshift%20cluster.jpg)
+![Architectural Diagram](https://github.com/smogalloyubio/Openshift-platform-project-01/blob/main/ArchitectureDiagram/_openshiftnewapp.jpg)
 ---
 
 ##  Business Value
