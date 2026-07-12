@@ -197,7 +197,7 @@ Openshift-Platform-Fastapi-Project
 │
 ├── static/
 │
-├── Openshift/
+├── Kustomized/
 │   ├── deployment.yaml
 │   ├── service.yaml
 │   ├── route.yaml
@@ -226,7 +226,7 @@ Openshift-Platform-Fastapi-Project
 | **fastapi_app/**       | FastAPI backend containing API routes and OpenShift automation logic |
 | **templates/**         | HTML templates used by the dashboard                                 |
 | **static/**            | CSS, JavaScript, and static assets                                   |
-| **Openshift/**         | Kubernetes and OpenShift deployment manifests                        |
+| **Kustomized/**         | Kubernetes and OpenShift deployment manifests                        |
 | **tests/**             | Automated test suite                                                 |
 | **.github/workflows/** | GitHub Actions CI/CD workflows                                       |
 | **Dockerfile**         | Docker image definition                                              |
@@ -236,7 +236,6 @@ Openshift-Platform-Fastapi-Project
 ---
 
 # 📋 Prerequisites
-
 Before running this project, ensure the following tools are installed on your machine.
 
 | Tool                 | Version                       |
@@ -404,159 +403,372 @@ After starting the application, verify the installation by checking the followin
 * The `oc` CLI is authenticated with your cluster.
 
 If all the above checks pass, your environment is ready for deployment and automation.
+---
+
+## GitHub Actions deployment pipeline
+![GITHUB ACTION PIPELINE](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Screenshot%202026-05-25%20at%2009.19.22.png)
+---
 
 
-
-
-
-
-
-
-
-
-
+![OPENSHIFT DEPLOYMENT](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Screenshot%202026-05-25%20at%2009.18.51.png)
 
 
 
 ---
 
-## Tools Used
+# 🐳 Docker Containerization
 
-| Tool | Purpose |
-|------|----------|
-| **FastAPI** | Backend automation API |
-| **OpenShift CLI (`oc`)** | Executes cluster commands |
-| **Docker / Quay.io** | Container image management |
-| **GitHub Actions** | CI/CD automation |
-| **Python 3.12** | Core language |
-| **HTML + JS** | Dashboard interface |
+To ensure consistency across development, testing, and production environments, the application is fully containerized using Docker.
+Containerization eliminates the "it works on my machine" problem by packaging the application and all its dependencies into a portable container image that can run consistently across any environment.
+
+## Dockerfile Overview
+
+The Docker image is built using a lightweight Python base image and includes all required application dependencies.
+
+### Build Process
+
+1. Pull the Python 3.12 Slim base image.
+2. Set the application working directory.
+3. Copy the dependency file.
+4. Install Python packages.
+5. Copy the application source code.
+6. Expose port **5000**.
+7. Start the FastAPI application.
 
 ---
 
-## Installation
+## Build the Docker Image
 
 ```bash
-git clone https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project.git
-cd Openshift-Platform-Fastapi-Project
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+docker build -t openshift-platform:latest .
+```
+---
 
-
-### High‑Level Flow
-
-
-## Local setup and run
-
-### Prerequisites
-
-- Python 3.12
-- `pip`
-- `git`
-
-### Install dependencies
+## Run the Docker Container
 
 ```bash
-pip install -r requirements.txt
+docker run -d \
+-p 5000:5000 \
+--name openshift-platform \
+openshift-platform:latest
 ```
 
-### Run locally
+Open your browser:
 
-```bash
-install virtual env
-python3 -m venv venv
-source venv/bin/activate
-uvicorn fastapi_app.main:app --reload 
+```text
+http://localhost:5000
 ```
 
-Then open `http://localhost:5000` in your browser.
+---
 
-### Run tests
+## Verify the Container
+
+Check running containers.
+
+```bash
+docker ps
+```
+
+View application logs.
+
+```bash
+docker logs openshift-platform
+```
+
+Stop the container.
+
+```bash
+docker stop openshift-platform
+```
+
+Remove the container.
+
+```bash
+docker rm openshift-platform
+```
+
+---
+
+# ☸️ OpenShift Deployment
+
+Once the Docker image has been built and pushed to the container registry, the application can be deployed to an OpenShift cluster.
+
+The repository contains Kubernetes and OpenShift manifests that automate the deployment process.
+
+---
+
+## Deployment Resources
+
+| Resource   | Purpose                              |
+| ---------- | ------------------------------------ |
+| Deployment | Creates and manages application Pods |
+| Service    | Provides internal network access     |
+| Route      | Exposes the application externally   |
+| ConfigMap  | Stores application configuration     |
+| Secret     | Stores sensitive credentials         |
+
+---
+
+## OpenShift Manifest Directory
+
+```text
+Openshift/
+
+├── deployment.yaml
+├── service.yaml
+├── route.yaml
+├── configmap.yaml
+└── secret.yaml
+```
+
+---
+
+## Deploy the Application
+
+Apply all manifests.
+
+```bash
+oc apply -f Openshift/
+```
+
+Verify the deployment.
+
+```bash
+oc get pods
+
+oc get svc
+
+oc get routes
+```
+
+Describe the deployment.
+
+```bash
+oc describe deployment myapp-dev
+```
+
+---
+
+## Scaling the Application
+
+Scale the deployment to three replicas.
+
+```bash
+oc scale deployment myapp-dev \
+--replicas=3
+```
+
+Verify the replica count.
+
+```bash
+oc get deployment
+```
+
+---
+
+## Viewing Application Logs
+
+Retrieve logs from the running Pods.
+
+```bash
+oc logs deployment/myapp-dev
+```
+
+Follow logs in real time.
+
+```bash
+oc logs deployment/myapp-dev -f
+```
+
+---
+
+## Checking Application Health
+
+Verify that the application is running correctly.
+
+```bash
+oc get all
+```
+
+Check application events.
+
+```bash
+oc get events
+```
+
+---
+
+# ⚙️ GitHub Actions CI/CD Pipeline
+
+The project includes a fully automated Continuous Integration and Continuous Deployment (CI/CD) pipeline built with GitHub Actions.
+
+Every code change is automatically validated, scanned, built, and deployed without manual intervention.
+
+This automation reduces deployment time, improves software quality, and ensures consistent releases.
+
+---
+
+## Pipeline Workflow
+
+The workflow is located at:
+
+```text
+.github/workflows/openshift_deploy.yaml
+```
+
+---
+
+## Pipeline Stages
+
+### 1. Checkout Repository
+
+Downloads the latest version of the source code.
+
+---
+
+### 2. Install Dependencies
+
+Installs all required Python packages.
+
+---
+
+### 3. Run Automated Tests
+
+Runs the Pytest test suite to validate the application.
 
 ```bash
 pytest tests/ -v
 ```
 
-This verifies the main Flask routes and API endpoints.
+---
 
-## Container build and deployment
+### 4. Security Scan
 
-The project is containerized with `Dockerfile` and deployed to OpenShift.
+The repository is scanned using **Trivy** to detect:
 
-### Docker image
+* Vulnerable packages
+* Known CVEs
+* Security misconfigurations
+* Dependency vulnerabilities
 
-- Base image: `python:3.12-slim`
-- Installs dependencies from `requirements.txt`
-- Copies the repository contents into `/app`
-- Exposes port `5000`
-- Starts the app with `python app.py`
+---
 
-### OpenShift manifests
+### 5. Build Docker Image
 
-The `Openshift/` folder contains:
-- `deployment.yaml` - deployment for `myapp-dev` in `ubiowororuki-dev`
-- `service.yaml` - service that exposes port `5000`
-- `route.yaml` - OpenShift route to make the app reachable externally
-
-The deployment is configured to use the image pushed to the OpenShift internal registry at:
-
-`image-registry.openshift-image-registry.svc:5000/ubiowororuki-dev/myapp-dev:latest`
-
-## GitHub Actions deployment pipeline
-![GITHUB ACTION PIPELINE](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Screenshot%202026-05-25%20at%2009.19.22.png)
-
-The workflow `.github/workflows/openshift_deploy.yaml` is the main CI/CD flow:
-
-1. `test` - checkout, install Python, run `pytest`
-2. `scan_docker` - scan the repository with Trivy
-3. `build` - build the Docker image, scan it, and push to Quay
-4. `deploy` - install `oc`, authenticate with OpenShift, and trigger the OpenShift build webhook
-
-### Required secrets
-
-The GitHub workflow relies on the following repository secrets:
-- `QUAY_USERNAME`
-- `QUAY_TOKEN`
-- `OPENSHIFT_SERVER`
-- `OPENSHIFT_TOKEN`
-- `WEBHOOK_SECRET`
-
-### Deployment flow
-
-When a push is made to `main` or the workflow is manually dispatched, GitHub Actions will:
-- run tests
-- scan code and image security
-- build and push the container image to Quay
-- authenticate with OpenShift
-- hit the OpenShift build webhook for `myapp-dev`
-
-![OPENSHIFT DEPLOYMENT](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Screenshot%202026-05-25%20at%2009.18.51.png)
-
-## OpenShift automation helper
-
-The FastAPI app in `fastapi_app/main.py` provides optional automation endpoints for OpenShift operations, including:
-- deploy YAMLs from `Openshift/*`
-- start a build
-- get or expose routes
-- scale deployment replicas
-- view deployment logs
-- deploy a custom image with ConfigMaps and Secrets
-
-This helper is useful for demonstration or custom deployment workflows, but the main app itself is `app.py`.
-
-
-## Quick start summary
+Builds a new container image from the latest source code.
 
 ```bash
-git clone https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project.git
-cd Openshift-Platform-Fastapi-Project
-pip install -r requirements.txt
-python3 -m venv venv
-source venv/bin/activate
+docker build -t openshift-platform .
 ```
+
+---
+
+### 6. Push Image to Quay
+
+Authenticates with Quay.io and publishes the Docker image.
+
+Example image:
+
+```text
+quay.io/your-repository/openshift-platform:latest
+```
+
+---
+
+### 7. Authenticate with OpenShift
+
+GitHub Actions securely authenticates using the repository secrets.
+
+```text
+OPENSHIFT_SERVER
+
+OPENSHIFT_TOKEN
+```
+
+---
+
+### 8. Trigger Deployment
+
+The workflow triggers an OpenShift BuildConfig webhook to deploy the latest version of the application.
+
+---
+
+## GitHub Secrets
+
+The workflow requires the following encrypted repository secrets.
+
+| Secret           | Purpose              |
+| ---------------- | -------------------- |
+| OPENSHIFT_SERVER | OpenShift API URL    |
+| OPENSHIFT_TOKEN  | Authentication Token |
+| QUAY_USERNAME    | Quay Username        |
+| QUAY_TOKEN       | Quay Access Token    |
+| WEBHOOK_SECRET   | BuildConfig Webhook  |
+
+---
+
+# 🔄 End-to-End Deployment Workflow
+
+The following diagram illustrates the complete deployment process.
+
+
+
+# 🔐 Security
+
+Security is integrated throughout the deployment pipeline.
+
+## Implemented Security Controls
+
+* GitHub encrypted secrets
+* OpenShift authentication tokens
+* Trivy vulnerability scanning
+* Secure Docker image publishing
+* Private container registry
+* Automated security validation during CI
+
+These controls help identify vulnerabilities early in the software delivery lifecycle and reduce the risk of deploying insecure container images.
+
+---
+
+# 🧪 Testing
+
+The project includes automated testing to ensure application stability and deployment reliability.
+
+## Run Tests
+
+```bash
+pytest tests/ -v
+```
+
+---
+
+## Test Coverage
+
+| Test Type               | Tool           |
+| ----------------------- | -------------- |
+| Unit Testing            | Pytest         |
+| Docker Build Validation | Docker         |
+| CI Validation           | GitHub Actions |
+| Security Scanning       | Trivy          |
+
+---
+
+## Expected Test Results
+
+A successful test run should verify:
+
+* Application starts successfully.
+* API endpoints respond correctly.
+* Docker image builds successfully.
+* No critical security vulnerabilities are detected.
+* GitHub Actions workflow completes successfully.
+* OpenShift deployment is triggered without errors.
+
+---
 ![DASHBOARD UI](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Screenshot%202026-05-25%20at%2009.18.07.png)
 
 For OpenShift deployment, configure the required secrets, then use the GitHub Actions workflow or deploy the provided manifests with `oc apply -f Openshift/ * -n ubiowororuki-dev`.
 
 ---
 ![DASHBOARD UI](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Screenshot%202026-05-25%20at%2009.19.07.png)
+```
