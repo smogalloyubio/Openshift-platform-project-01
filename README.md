@@ -158,24 +158,264 @@ This platform solves those problems by offering:
 https://drive.google.com/file/d/1zCL85bGMT5S07hPlfglaOFpvnUr9YoVX/view?usp=sharing
 ---
 
-## Architecture Overview
+---
 
-### System Components
-- **FastAPI Backend** — automation engine (`fastapi_app/main.py`)
-- **Web UI** — dashboard for deployment and scaling
-- **OpenShift Cluster** — executes deployments, services, routes
-- **GitHub Actions** — CI/CD pipeline for build and deploy
-- **Quay.io Registry** — stores container images
+# 🛠️ Technology Stack
+
+The platform leverages modern DevOps and cloud-native technologies to automate application deployment and management on OpenShift.
+
+| Category             | Technologies          |
+| -------------------- | --------------------- |
+| Backend Framework    | FastAPI               |
+| Programming Language | Python 3.12           |
+| Frontend             | HTML, CSS, JavaScript |
+| Containerization     | Docker                |
+| Container Registry   | Quay.io               |
+| CI/CD                | GitHub Actions        |
+| Container Platform   | Red Hat OpenShift     |
+| Kubernetes CLI       | OpenShift CLI (`oc`)  |
+| Security Scanning    | Trivy                 |
+| Testing              | Pytest                |
+| Version Control      | Git & GitHub          |
 
 ---
 
-## Architecture Diagrams
+# 📂 Project Structure
 
-###  High‑Level Architecture
-![High-Level Architecture](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Copilot_20260525_095756.png)
+The repository is organized into logical components to separate application code, deployment manifests, automation workflows, and tests.
 
-###  System Architecture
-![System Architecture](https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project/blob/main/screenshoot/Copilot_20260525_095822.png)
+```text
+Openshift-Platform-Fastapi-Project
+│
+├── fastapi_app/
+│   ├── main.py
+│   ├── routes/
+│   ├── services/
+│   └── utils/
+│
+├── templates/
+│
+├── static/
+│
+├── Openshift/
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   ├── route.yaml
+│   ├── configmap.yaml
+│   └── secret.yaml
+│
+├── tests/
+│
+├── .github/
+│   └── workflows/
+│       └── openshift_deploy.yaml
+│
+├── Dockerfile
+├── app.py
+├── requirements.txt
+├── README.md
+└── LICENSE
+```
+
+---
+
+# 📁 Repository Overview
+
+| Directory              | Description                                                          |
+| ---------------------- | -------------------------------------------------------------------- |
+| **fastapi_app/**       | FastAPI backend containing API routes and OpenShift automation logic |
+| **templates/**         | HTML templates used by the dashboard                                 |
+| **static/**            | CSS, JavaScript, and static assets                                   |
+| **Openshift/**         | Kubernetes and OpenShift deployment manifests                        |
+| **tests/**             | Automated test suite                                                 |
+| **.github/workflows/** | GitHub Actions CI/CD workflows                                       |
+| **Dockerfile**         | Docker image definition                                              |
+| **requirements.txt**   | Python dependencies                                                  |
+| **README.md**          | Project documentation                                                |
+
+---
+
+# 📋 Prerequisites
+
+Before running this project, ensure the following tools are installed on your machine.
+
+| Tool                 | Version                       |
+| -------------------- | ----------------------------- |
+| Python               | 3.12 or later                 |
+| Git                  | Latest                        |
+| Docker               | Latest                        |
+| OpenShift CLI (`oc`) | Latest                        |
+| GitHub Account       | Required                      |
+| Quay.io Account      | Required for image publishing |
+| OpenShift Cluster    | Required for deployment       |
+
+---
+
+# 🚀 Installation
+
+## Step 1 — Clone the Repository
+
+```bash
+git clone https://github.com/smogalloyubio/Openshift-Platform-Fastapi-Project.git
+```
+
+Move into the project directory.
+
+```bash
+cd Openshift-Platform-Fastapi-Project
+```
+
+---
+
+## Step 2 — Create a Virtual Environment
+
+Linux/macOS
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Windows
+
+```powershell
+python -m venv venv
+
+venv\Scripts\activate
+```
+
+---
+
+## Step 3 — Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+After installation, verify that all dependencies have been installed successfully.
+
+```bash
+pip list
+```
+
+---
+
+# ⚙️ Configuration
+
+The application requires access to an OpenShift cluster and a container registry.
+
+These values can be configured using GitHub Secrets or environment variables.
+
+Example:
+
+```env
+OPENSHIFT_SERVER=https://api.cluster.example.com:6443
+
+OPENSHIFT_TOKEN=<your-openshift-token>
+
+QUAY_USERNAME=<your-quay-username>
+
+QUAY_PASSWORD=<your-quay-password>
+
+WEBHOOK_SECRET=<build-webhook-secret>
+```
+
+---
+
+# 🔐 GitHub Repository Secrets
+
+To enable automated deployments through GitHub Actions, configure the following repository secrets.
+
+| Secret             | Purpose                       |
+| ------------------ | ----------------------------- |
+| `OPENSHIFT_SERVER` | OpenShift API endpoint        |
+| `OPENSHIFT_TOKEN`  | Authentication token          |
+| `QUAY_USERNAME`    | Quay username                 |
+| `QUAY_TOKEN`       | Quay access token             |
+| `WEBHOOK_SECRET`   | OpenShift BuildConfig webhook |
+
+These secrets are securely injected into the GitHub Actions workflow during execution.
+
+---
+
+# ▶️ Running the Application Locally
+
+After installing all dependencies, start the FastAPI application.
+
+```bash
+uvicorn fastapi_app.main:app --reload
+```
+
+By default, the application will be available at:
+
+```text
+http://localhost:5000
+```
+
+Open your browser and navigate to the URL above to access the dashboard.
+
+---
+
+# 📚 API Documentation
+
+FastAPI automatically generates interactive API documentation.
+
+Once the application is running, open:
+
+Swagger UI
+
+```text
+http://localhost:5000/docs
+```
+
+ReDoc
+
+```text
+http://localhost:5000/redoc
+```
+
+These pages provide an interactive interface for testing all available API endpoints.
+
+---
+
+# ⚙️ Environment Variables
+
+The application supports the following environment variables.
+
+| Variable           | Description                          |
+| ------------------ | ------------------------------------ |
+| `OPENSHIFT_SERVER` | OpenShift API Server                 |
+| `OPENSHIFT_TOKEN`  | OpenShift Authentication Token       |
+| `QUAY_USERNAME`    | Quay Registry Username               |
+| `QUAY_PASSWORD`    | Quay Registry Password               |
+| `WEBHOOK_SECRET`   | OpenShift BuildConfig Webhook Secret |
+
+---
+
+# ✅ Verifying the Installation
+
+After starting the application, verify the installation by checking the following:
+
+* The FastAPI server starts without errors.
+* The dashboard is accessible in your browser.
+* The Swagger documentation loads successfully.
+* The application can communicate with the OpenShift cluster.
+* Docker is installed and functioning correctly.
+* The `oc` CLI is authenticated with your cluster.
+
+If all the above checks pass, your environment is ready for deployment and automation.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ---
